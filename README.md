@@ -2,6 +2,29 @@
 
 > 让“AI 帮我做了一个能跑的产品”，再向前走一步：上线前先问对 100 个安全问题。
 
+## English Overview
+
+**Vibe Coding Launch Security Checklist** is an AI-readable pre-launch security checklist for MVPs built with vibe coding, web coding, low-code tools, or AI-assisted development.
+
+It is designed for founders, product owners, operators, indie hackers, and AI agents who need to answer one urgent question before launch:
+
+> “This product works, but is it safe enough to face real users?”
+
+The project turns common launch risks into a practical review system:
+
+- Can a normal user see another user’s data?
+- Can SMS verification be abused until the bill explodes?
+- Can user-generated content create legal, brand, or moderation incidents?
+- Can payment amount, order status, or user roles be changed from the frontend?
+- Can an AI assistant leak prompts, internal rules, or sensitive context?
+- Does the admin panel have MFA, role-based access, and audit logs?
+- Are backups real, tested, and restorable?
+- Is there a clear incident response path when something breaks after launch?
+
+This is not a penetration-testing manual and not an exploit guide. It is a launch-readiness safety layer: 20 security domains, 100 checklist items, plain-language checks for non-engineers, and structured JSON that ChatGPT, Codex, Claude, or other AI tools can read directly.
+
+Use it before shipping a public MVP, especially if the product includes login, payments, UGC, AI chat, file uploads, admin dashboards, cloud services, or personal data.
+
 这是一个面向 **vibe coding / Web coding / AI 生成应用** 的上线前安全检查项目。它不是给安全专家看的论文，而是给完全不懂代码的产品负责人、独立开发者、运营人员和创始人用的“上线前刹车系统”。
 
 当一个 MVP 从本地 Demo 走向真实用户，风险会突然变成现实：
@@ -38,7 +61,7 @@
 如果启用 GitHub Pages，入口是：
 
 ```text
-https://<your-github-username>.github.io/<repo-name>/
+https://lay-quq.github.io/vibe-coding-launch-security-checklist/
 ```
 
 本地查看：
