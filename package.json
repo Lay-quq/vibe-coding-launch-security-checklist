@@ -1,0 +1,23 @@
+{
+  "name": "vibe-coding-launch-security-checklist",
+  "version": "1.0.0",
+  "private": false,
+  "description": "AI-readable pre-launch security checklist for vibe coding MVP projects.",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/generate-checklist.mjs",
+    "validate": "node -e \"const fs=require('fs'); const data=JSON.parse(fs.readFileSync('data/checklist.json','utf8')); if(data.categories.length!==20 || data.items.length!==100) throw new Error('Expected 20 categories and 100 items'); console.log('Checklist OK:', data.categories.length, 'categories,', data.items.length, 'items');\"",
+    "serve": "npx --yes serve ."
+  },
+  "keywords": [
+    "vibe-coding",
+    "security-checklist",
+    "mvp",
+    "launch-readiness",
+    "ai-readable",
+    "owasp",
+    "ugc",
+    "llm-security"
+  ],
+  "license": "MIT"
+}

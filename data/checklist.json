@@ -1,0 +1,2294 @@
+{
+  "schema_version": "2.0.0",
+  "type": "SecurityChecklist",
+  "id": "vibe-coding-launch-security-checklist",
+  "title": "Vibe Coding 项目上线前安全检测清单",
+  "language": "zh-CN",
+  "last_updated": "2026-06-28",
+  "tagline": "让不会写安全代码的人，也能在上线前问对问题、看见红线、拦住事故。",
+  "intended_use": [
+    "mvp_launch_review",
+    "vibe_coding_security_review",
+    "ai_assisted_product_audit"
+  ],
+  "target_readers": [
+    "nontechnical_founder",
+    "web_coding_builder",
+    "product_owner",
+    "operations",
+    "ai_agent"
+  ],
+  "ai_output_schema": {
+    "finding_fields": [
+      "issue",
+      "evidence",
+      "impact",
+      "recommendation",
+      "priority",
+      "related_checklist_item_id",
+      "confidence"
+    ],
+    "unknown_fields": [
+      "checklist_item_id",
+      "reason",
+      "needed_evidence"
+    ]
+  },
+  "categories": [
+    {
+      "id": "auth",
+      "name": "账号、登录与身份认证",
+      "description": "登录、注册、找回密码、会话、第三方登录和管理员账号。"
+    },
+    {
+      "id": "access",
+      "name": "权限与后台访问控制",
+      "description": "普通用户、运营、客服、财务、管理员之间的数据和功能边界。"
+    },
+    {
+      "id": "input",
+      "name": "数据输入、表单与注入风险",
+      "description": "所有用户可输入、上传、提交、搜索、备注和富文本内容。"
+    },
+    {
+      "id": "browser",
+      "name": "Web、H5 与浏览器安全",
+      "description": "HTTPS、Cookie、CSRF、安全响应头、第三方脚本和浏览器侧风险。"
+    },
+    {
+      "id": "app",
+      "name": "App 安全",
+      "description": "客户端密钥、权限申请、本地存储、接口信任和崩溃日志。"
+    },
+    {
+      "id": "miniapp",
+      "name": "小程序安全与平台规范",
+      "description": "隐私指引、手机号授权、OpenID/UnionID、客服投诉和服务类目。"
+    },
+    {
+      "id": "ai",
+      "name": "AI 功能与大模型安全",
+      "description": "提示词泄露、工具调用、AI 输出、RAG、成本和高风险建议。"
+    },
+    {
+      "id": "ugc",
+      "name": "UGC、社区与内容安全",
+      "description": "评论、帖子、头像、昵称、私信、举报、侵权和未成年人保护。"
+    },
+    {
+      "id": "payment",
+      "name": "支付、订单与资金安全",
+      "description": "金额、回调、退款、重复支付、卡数据和对账。"
+    },
+    {
+      "id": "privacy",
+      "name": "隐私、个人信息与合规",
+      "description": "隐私政策、最小必要、敏感个人信息、注销、第三方共享。"
+    },
+    {
+      "id": "cloud",
+      "name": "云服务、服务器与基础设施",
+      "description": "云密钥、数据库、对象存储、成本限额、环境隔离。"
+    },
+    {
+      "id": "data",
+      "name": "数据库、备份与恢复",
+      "description": "备份、恢复演练、软删除、迁移回滚和留存期限。"
+    },
+    {
+      "id": "api",
+      "name": "API、接口与限流",
+      "description": "接口频率、验证码、字段返回、错误信息、API 版本。"
+    },
+    {
+      "id": "admin",
+      "name": "后台运营系统",
+      "description": "后台入口、操作日志、导出、隐私搜索和运营看板。"
+    },
+    {
+      "id": "monitor",
+      "name": "日志、监控与告警",
+      "description": "可用性、业务告警、日志脱敏、值班和日志保存。"
+    },
+    {
+      "id": "release",
+      "name": "发布、测试与回滚",
+      "description": "上线验收、回滚、灰度、功能开关和发布记录。"
+    },
+    {
+      "id": "legal",
+      "name": "法务、资质与平台合规",
+      "description": "业务资质、ICP备案、营销文案、协议和跨境数据。"
+    },
+    {
+      "id": "incident",
+      "name": "运营应急与事故响应",
+      "description": "事故联系人、数据泄露、支付异常、投诉舆情和维护公告。"
+    },
+    {
+      "id": "supply",
+      "name": "第三方服务与供应链",
+      "description": "插件、SDK、开源许可证、替代方案、合同和数据处理。"
+    },
+    {
+      "id": "uxsec",
+      "name": "用户体验中的安全边界",
+      "description": "收费、删除、提示、错误文案和用户安全教育。"
+    }
+  ],
+  "items": [
+    {
+      "id": "auth-001",
+      "category_id": "auth",
+      "priority": "P0",
+      "severity": "critical",
+      "title": "弱密码与撞库",
+      "risk": "用户账号或后台账号被批量尝试登录，资金、隐私和管理权限可能被盗。",
+      "nontechnical_check": "用常见弱密码注册或登录测试；连续输错 10-20 次，看是否出现限速、验证码、锁定或提醒。",
+      "ask_dev_or_ai": "登录失败是否按账号、IP、设备限速？密码是否加盐哈希存储？后台是否强制 MFA？",
+      "best_practice": "密码加盐哈希，登录失败限速，异常登录提醒，后台强制多因素认证。",
+      "red_flags": [
+        "输错密码无限尝试",
+        "后台只靠一个弱密码",
+        "开发说先上线以后再加限速"
+      ],
+      "tags": [
+        "login",
+        "password",
+        "mfa",
+        "rate-limit"
+      ]
+    },
+    {
+      "id": "auth-002",
+      "category_id": "auth",
+      "priority": "P0",
+      "severity": "critical",
+      "title": "管理员账号默认密码",
+      "risk": "上线后被扫描到后台入口并用默认账号接管系统。",
+      "nontechnical_check": "确认没有 admin/admin123/123456/test 这类默认账号；外包、测试、临时账号都要列出。",
+      "ask_dev_or_ai": "所有测试账号是否删除或改密？后台是否单独保护？是否记录后台登录？",
+      "best_practice": "上线前重置所有管理员密码，删除测试账号，后台账号最小化并启用 MFA。",
+      "red_flags": [
+        "多人共用 admin",
+        "测试账号仍可登录生产",
+        "没有后台登录告警"
+      ],
+      "tags": [
+        "admin",
+        "default-account",
+        "mfa"
+      ]
+    },
+    {
+      "id": "auth-003",
+      "category_id": "auth",
+      "priority": "P0",
+      "severity": "high",
+      "title": "登录态长期不过期",
+      "risk": "手机丢失、Cookie 泄露或共享电脑使用后，别人可长期访问账号。",
+      "nontechnical_check": "退出登录后刷新页面、返回上一页、隔天再访问；修改密码后旧设备是否仍在线。",
+      "ask_dev_or_ai": "Token/Cookie 多久过期？退出登录是否立即失效？改密后是否踢掉旧会话？",
+      "best_practice": "合理过期时间，退出即失效，改密后全端下线，后台会话更短。",
+      "red_flags": [
+        "退出后还能访问个人页",
+        "改密后旧设备仍可用",
+        "Token 永不过期"
+      ],
+      "tags": [
+        "session",
+        "cookie",
+        "token"
+      ]
+    },
+    {
+      "id": "auth-004",
+      "category_id": "auth",
+      "priority": "P1",
+      "severity": "medium",
+      "title": "第三方登录绑定错误",
+      "risk": "微信、Google、Apple 等第三方登录绑定到错误账号，导致串号或账号接管。",
+      "nontechnical_check": "用两个邮箱、两个微信号反复绑定/解绑；同一用户不同入口登录，检查订单和资料是否一致。",
+      "ask_dev_or_ai": "第三方登录唯一标识用什么？解绑和重绑是否需要二次确认？",
+      "best_practice": "使用平台稳定 ID，绑定、解绑、换绑都要二次确认并留日志。",
+      "red_flags": [
+        "只用昵称或邮箱匹配账号",
+        "换绑不需要验证原账号",
+        "同一用户多入口出现多个账号"
+      ],
+      "tags": [
+        "oauth",
+        "social-login",
+        "account-linking"
+      ]
+    },
+    {
+      "id": "auth-005",
+      "category_id": "auth",
+      "priority": "P0",
+      "severity": "critical",
+      "title": "找回密码被滥用",
+      "risk": "攻击者通过验证码、重置链接或旧会话接管用户账号。",
+      "nontechnical_check": "连续请求找回密码验证码；旧链接重复使用；改密后旧会话是否失效。",
+      "ask_dev_or_ai": "验证码有效期、错误次数、发送频率是多少？找回后是否全端下线？",
+      "best_practice": "短有效期、限频、一次性链接，改密后全端下线，高风险操作二次验证。",
+      "red_flags": [
+        "重置链接可重复使用",
+        "验证码长期有效",
+        "改密后旧登录仍有效"
+      ],
+      "tags": [
+        "password-reset",
+        "otp",
+        "account-recovery"
+      ]
+    },
+    {
+      "id": "access-001",
+      "category_id": "access",
+      "priority": "P0",
+      "severity": "high",
+      "title": "普通用户访问管理员数据",
+      "risk": "订单、用户、财务、隐私数据被普通用户看到或修改。",
+      "nontechnical_check": "用普通账号尝试访问后台链接、管理接口页面或复制管理员页面地址。",
+      "ask_dev_or_ai": "权限判断是在服务端做，还是只隐藏按钮？每个后台接口是否鉴权？",
+      "best_practice": "所有管理功能在服务端强制权限校验，前端隐藏只作体验。",
+      "red_flags": [
+        "普通账号能打开后台页面",
+        "复制接口后能返回数据",
+        "开发说按钮隐藏就行"
+      ],
+      "tags": [
+        "authorization",
+        "admin",
+        "server-side-check"
+      ]
+    },
+    {
+      "id": "access-002",
+      "category_id": "access",
+      "priority": "P0",
+      "severity": "high",
+      "title": "越权查看他人数据",
+      "risk": "修改 URL 或接口参数中的用户 ID、订单 ID、文件 ID，就能看到别人数据。",
+      "nontechnical_check": "注册两个账号，把 A 的订单、文件、资料链接给 B 打开或改 ID 尝试。",
+      "ask_dev_or_ai": "每个数据接口是否校验当前用户是否拥有该数据？是否有租户隔离？",
+      "best_practice": "对象级权限检查，数据归属从登录态判断，禁止只信任前端传来的 userId。",
+      "red_flags": [
+        "改数字 ID 能看到别人数据",
+        "只要登录就能访问任意资源",
+        "多租户数据可串"
+      ],
+      "tags": [
+        "bola",
+        "idor",
+        "tenant"
+      ]
+    },
+    {
+      "id": "access-003",
+      "category_id": "access",
+      "priority": "P0",
+      "severity": "high",
+      "title": "后台无角色分级",
+      "risk": "客服、运营、财务都能删库、退款、改权限或导出全量用户。",
+      "nontechnical_check": "列出后台角色和能操作的菜单；用低权限账号尝试访问退款、导出、删除。",
+      "ask_dev_or_ai": "是否有角色权限表？高危操作谁能做？权限变更是否留痕？",
+      "best_practice": "老板、管理员、客服、财务、运营分权；高危功能最小授权。",
+      "red_flags": [
+        "所有后台账号权限一样",
+        "客服能导出全部用户",
+        "财务能改用户权限"
+      ],
+      "tags": [
+        "rbac",
+        "least-privilege",
+        "admin"
+      ]
+    },
+    {
+      "id": "access-004",
+      "category_id": "access",
+      "priority": "P1",
+      "severity": "medium",
+      "title": "高危操作无二次确认",
+      "risk": "误删用户、误退款、误封禁、误改价格，事故后无法追踪。",
+      "nontechnical_check": "点击删除、退款、封号、改价，看是否需要确认、原因和记录。",
+      "ask_dev_or_ai": "高危操作是否需要确认、备注、审批、审计日志？",
+      "best_practice": "二次确认、权限限制、操作留痕，大额或不可逆动作走审批。",
+      "red_flags": [
+        "一键删除没有确认",
+        "退款无原因记录",
+        "操作日志可被普通管理员删除"
+      ],
+      "tags": [
+        "audit",
+        "approval",
+        "admin"
+      ]
+    },
+    {
+      "id": "access-005",
+      "category_id": "access",
+      "priority": "P1",
+      "severity": "medium",
+      "title": "测试入口遗留",
+      "risk": "调试页面、测试接口、Mock 数据入口被外部利用。",
+      "nontechnical_check": "搜索或访问 /test、/debug、/api/docs、/swagger、/admin-test、/.env。",
+      "ask_dev_or_ai": "上线包是否关闭 debug/test/mock 接口？API 文档是否只对内部开放？",
+      "best_practice": "生产环境禁用调试入口、详细错误页和公开 API 文档。",
+      "red_flags": [
+        "生产能访问调试页",
+        "公开显示 Swagger",
+        "错误页显示源码路径"
+      ],
+      "tags": [
+        "debug",
+        "misconfiguration",
+        "production"
+      ]
+    },
+    {
+      "id": "input-001",
+      "category_id": "input",
+      "priority": "P0",
+      "severity": "high",
+      "title": "表单注入攻击",
+      "risk": "登录、搜索、评论、订单备注被用来攻击数据库或系统命令。",
+      "nontechnical_check": "在输入框输入引号、尖括号、大括号等特殊字符，观察是否报错、绕过或显示技术错误。",
+      "ask_dev_or_ai": "所有用户输入是否做服务端校验和参数化查询？是否禁止拼接 SQL 或命令？",
+      "best_practice": "参数化查询、服务端输入校验、输出转义、统一错误处理。",
+      "red_flags": [
+        "输入特殊字符出现数据库错误",
+        "搜索框能让页面崩溃",
+        "开发只做前端校验"
+      ],
+      "tags": [
+        "injection",
+        "sql",
+        "validation"
+      ]
+    },
+    {
+      "id": "input-002",
+      "category_id": "input",
+      "priority": "P0",
+      "severity": "high",
+      "title": "上传恶意文件",
+      "risk": "头像、附件、简历、图片可变成木马、脚本、钓鱼文件或存储耗尽攻击。",
+      "nontechnical_check": "尝试上传明显不该支持的文件类型和超大文件，确认是否拒绝。",
+      "ask_dev_or_ai": "文件类型、大小、扩展名、真实文件头、病毒扫描如何限制？",
+      "best_practice": "白名单类型、随机重命名、独立存储、禁止执行、大小和数量限制。",
+      "red_flags": [
+        "什么文件都能上传",
+        "文件上传后可执行",
+        "没有大小限制"
+      ],
+      "tags": [
+        "file-upload",
+        "malware",
+        "storage"
+      ]
+    },
+    {
+      "id": "input-003",
+      "category_id": "input",
+      "priority": "P1",
+      "severity": "medium",
+      "title": "表单无长度限制",
+      "risk": "超长文本拖垮服务、破坏页面布局或导致数据库异常。",
+      "nontechnical_check": "复制长文本到昵称、评论、地址、备注、AI 输入框，检查是否有合理限制。",
+      "ask_dev_or_ai": "每个字段是否有最大长度？服务端是否也限制？",
+      "best_practice": "前后端双重长度限制，错误提示清晰，长任务异步处理。",
+      "red_flags": [
+        "昵称能填几万字",
+        "服务端接受超大请求",
+        "页面被长文本撑坏"
+      ],
+      "tags": [
+        "validation",
+        "dos",
+        "form"
+      ]
+    },
+    {
+      "id": "input-004",
+      "category_id": "input",
+      "priority": "P0",
+      "severity": "high",
+      "title": "富文本或评论 XSS",
+      "risk": "用户发布脚本，其他用户或管理员打开页面即被攻击。",
+      "nontechnical_check": "在评论、昵称、简介里输入脚本样式的文本，看是否作为普通文本显示。",
+      "ask_dev_or_ai": "UGC 是否做 HTML 清洗和输出转义？后台页面是否同样防护？",
+      "best_practice": "禁止危险标签，使用成熟 sanitizer，输出转义，配置 CSP。",
+      "red_flags": [
+        "输入脚本后页面弹窗",
+        "后台审核页渲染用户 HTML",
+        "富文本不过滤危险标签"
+      ],
+      "tags": [
+        "xss",
+        "ugc",
+        "sanitization"
+      ]
+    },
+    {
+      "id": "input-005",
+      "category_id": "input",
+      "priority": "P0",
+      "severity": "high",
+      "title": "接口参数篡改关键业务字段",
+      "risk": "价格、折扣、积分、角色、订单状态被前端篡改。",
+      "nontechnical_check": "让开发演示订单金额、角色、积分是否由后端计算，而不是前端提交决定。",
+      "ask_dev_or_ai": "订单金额、权限、积分、库存是否全部由服务端计算？是否拒绝未知字段？",
+      "best_practice": "关键业务数据以服务端为准，输入字段白名单，敏感字段只允许内部流程修改。",
+      "red_flags": [
+        "前端提交价格即生效",
+        "用户能提交 role=admin",
+        "订单状态可由用户参数修改"
+      ],
+      "tags": [
+        "mass-assignment",
+        "business-logic",
+        "server-side"
+      ]
+    },
+    {
+      "id": "browser-001",
+      "category_id": "browser",
+      "priority": "P0",
+      "severity": "critical",
+      "title": "没有 HTTPS",
+      "risk": "密码、Token、支付信息和隐私数据可能被中间人窃取或篡改。",
+      "nontechnical_check": "检查网址是否为 https://，浏览器是否有安全锁；HTTP 是否自动跳转 HTTPS。",
+      "ask_dev_or_ai": "是否强制 HTTPS？证书是否自动续期？是否开启 HSTS？",
+      "best_practice": "全站 HTTPS，HTTP 跳转 HTTPS，证书自动续期，开启 HSTS。",
+      "red_flags": [
+        "登录页是 HTTP",
+        "证书过期",
+        "混合加载不安全资源"
+      ],
+      "tags": [
+        "https",
+        "tls",
+        "hsts"
+      ]
+    },
+    {
+      "id": "browser-002",
+      "category_id": "browser",
+      "priority": "P0",
+      "severity": "high",
+      "title": "Cookie 不安全",
+      "risk": "登录 Cookie 被脚本读取或非 HTTPS 请求窃取。",
+      "nontechnical_check": "让开发截图生产 Cookie 配置，检查是否设置 HttpOnly、Secure、SameSite。",
+      "ask_dev_or_ai": "Cookie 是否设置 HttpOnly、Secure、SameSite？Token 是否存在 localStorage？",
+      "best_practice": "登录 Cookie 使用 HttpOnly、Secure、SameSite，避免长期敏感 Token 暴露给前端脚本。",
+      "red_flags": [
+        "登录 Token 放 localStorage 且长期有效",
+        "Cookie 没有 Secure",
+        "退出后 Cookie 仍可用"
+      ],
+      "tags": [
+        "cookie",
+        "session",
+        "browser"
+      ]
+    },
+    {
+      "id": "browser-003",
+      "category_id": "browser",
+      "priority": "P1",
+      "severity": "medium",
+      "title": "跨站请求伪造 CSRF",
+      "risk": "用户登录状态下被诱导访问恶意页面，后台自动执行删除、退款、改密等操作。",
+      "nontechnical_check": "确认改密码、删除、退款、发公告等写操作是否有 CSRF 防护和二次确认。",
+      "ask_dev_or_ai": "写操作是否校验 CSRF token、SameSite、Origin 或 Referer？",
+      "best_practice": "CSRF Token、SameSite、敏感操作二次验证，避免 GET 执行写操作。",
+      "red_flags": [
+        "访问一个链接即可删除数据",
+        "Cookie 登录但无 CSRF 防护",
+        "退款接口可被外部表单触发"
+      ],
+      "tags": [
+        "csrf",
+        "cookie",
+        "browser"
+      ]
+    },
+    {
+      "id": "browser-004",
+      "category_id": "browser",
+      "priority": "P1",
+      "severity": "medium",
+      "title": "安全响应头缺失",
+      "risk": "页面更容易被嵌套、注入、嗅探或泄露来源信息。",
+      "nontechnical_check": "让开发用安全响应头检测工具出报告。",
+      "ask_dev_or_ai": "是否配置 CSP、frame-ancestors、Referrer-Policy、Permissions-Policy、HSTS？",
+      "best_practice": "上线前配置基础安全响应头，支付页和后台更严格。",
+      "red_flags": [
+        "网站可被任意 iframe 嵌入",
+        "没有 CSP",
+        "后台页面暴露完整来源信息"
+      ],
+      "tags": [
+        "headers",
+        "csp",
+        "clickjacking"
+      ]
+    },
+    {
+      "id": "browser-005",
+      "category_id": "browser",
+      "priority": "P2",
+      "severity": "low",
+      "title": "第三方脚本过多",
+      "risk": "统计、客服、广告脚本可能泄露数据、拖慢页面或被供应链攻击。",
+      "nontechnical_check": "列出页面加载的所有第三方域名，尤其是登录页、支付页、后台页。",
+      "ask_dev_or_ai": "每个第三方脚本用途是什么？是否必要？是否加载到敏感页面？",
+      "best_practice": "最小化第三方脚本，敏感页面只保留必要脚本，定期审查供应商。",
+      "red_flags": [
+        "支付页加载广告脚本",
+        "没人知道某个第三方域名用途",
+        "脚本来自不可信来源"
+      ],
+      "tags": [
+        "third-party-js",
+        "privacy",
+        "supply-chain"
+      ]
+    },
+    {
+      "id": "app-001",
+      "category_id": "app",
+      "priority": "P0",
+      "severity": "critical",
+      "title": "App 内硬编码密钥",
+      "risk": "逆向 App 后拿到 API Key、云密钥、支付密钥或管理接口凭证。",
+      "nontechnical_check": "问开发哪些密钥在 App 包里；让其确认这些密钥是否可以公开。",
+      "ask_dev_or_ai": "客户端包含哪些密钥？是否都是可公开或短期凭证？",
+      "best_practice": "敏感密钥只放服务端，客户端只拿短期、低权限、可撤销凭证。",
+      "red_flags": [
+        "App 内有云 AK/SK",
+        "支付密钥在客户端",
+        "接口只靠客户端密钥鉴权"
+      ],
+      "tags": [
+        "mobile",
+        "secret",
+        "client"
+      ]
+    },
+    {
+      "id": "app-002",
+      "category_id": "app",
+      "priority": "P0",
+      "severity": "high",
+      "title": "App 权限过度",
+      "risk": "被应用商店拒审、用户投诉隐私侵犯或采集超范围数据。",
+      "nontechnical_check": "安装 App，查看请求了相机、定位、通讯录、麦克风、相册等哪些权限。",
+      "ask_dev_or_ai": "每个权限对应哪个功能？拒绝授权后基础功能是否还能使用？",
+      "best_practice": "按需申请，使用时再申请，拒绝后不阻断非必要功能。",
+      "red_flags": [
+        "启动即索要所有权限",
+        "不授权手机号/定位就无法进入",
+        "隐私政策没写权限用途"
+      ],
+      "tags": [
+        "mobile",
+        "permission",
+        "privacy"
+      ]
+    },
+    {
+      "id": "app-003",
+      "category_id": "app",
+      "priority": "P1",
+      "severity": "medium",
+      "title": "接口只信任 App 来源",
+      "risk": "攻击者绕过 App 直接调用接口，突破前端限制。",
+      "nontechnical_check": "问开发是否所有接口都校验登录用户和权限，而不是只判断来自 App。",
+      "ask_dev_or_ai": "接口是否只信任登录态和服务端权限？App 签名校验是否只是辅助？",
+      "best_practice": "服务端鉴权为主，客户端签名、设备指纹仅作风控辅助。",
+      "red_flags": [
+        "接口靠 App 内固定 token 放行",
+        "服务端不校验用户权限",
+        "换工具调用接口也能成功"
+      ],
+      "tags": [
+        "mobile-api",
+        "authorization",
+        "server-side"
+      ]
+    },
+    {
+      "id": "app-004",
+      "category_id": "app",
+      "priority": "P1",
+      "severity": "medium",
+      "title": "敏感数据本地明文存储",
+      "risk": "手机被借用、备份、越狱或恶意软件读取后泄露数据。",
+      "nontechnical_check": "问开发本地是否保存身份证、Token、健康数据、支付信息、聊天记录。",
+      "ask_dev_or_ai": "本地缓存是否加密？退出登录是否清除？Token 是否放安全存储？",
+      "best_practice": "少存、加密、退出清除，Token 使用系统安全存储。",
+      "red_flags": [
+        "退出登录后本地仍有敏感数据",
+        "Token 明文缓存",
+        "崩溃后可从本地恢复聊天隐私"
+      ],
+      "tags": [
+        "mobile",
+        "local-storage",
+        "privacy"
+      ]
+    },
+    {
+      "id": "app-005",
+      "category_id": "app",
+      "priority": "P2",
+      "severity": "low",
+      "title": "崩溃日志带隐私",
+      "risk": "日志平台泄露手机号、订单、定位、聊天内容、Token。",
+      "nontechnical_check": "让开发展示崩溃日志样例，搜索手机号、Token、身份证、订单详情。",
+      "ask_dev_or_ai": "日志脱敏规则是什么？哪些字段禁止上报？",
+      "best_practice": "日志脱敏，禁止上报密码、Token、身份证、完整手机号和私密内容。",
+      "red_flags": [
+        "崩溃日志含完整请求体",
+        "日志里出现验证码",
+        "第三方日志平台可看用户隐私"
+      ],
+      "tags": [
+        "logging",
+        "mobile",
+        "privacy"
+      ]
+    },
+    {
+      "id": "miniapp-001",
+      "category_id": "miniapp",
+      "priority": "P0",
+      "severity": "high",
+      "title": "隐私指引不匹配实际收集",
+      "risk": "小程序审核失败、平台处罚、用户投诉。",
+      "nontechnical_check": "对照小程序隐私指引和实际调用的手机号、定位、头像、相册等权限。",
+      "ask_dev_or_ai": "每个隐私接口是否已在隐私指引声明？功能变更是否同步更新？",
+      "best_practice": "先声明、再调用，变更功能同步更新隐私指引。",
+      "red_flags": [
+        "调用手机号但隐私指引没写",
+        "上线后新增采集未更新声明",
+        "权限用途说不清"
+      ],
+      "tags": [
+        "miniapp",
+        "privacy",
+        "platform"
+      ]
+    },
+    {
+      "id": "miniapp-002",
+      "category_id": "miniapp",
+      "priority": "P0",
+      "severity": "high",
+      "title": "手机号授权滥用",
+      "risk": "强制授权导致投诉、审核问题或违反最小必要原则。",
+      "nontechnical_check": "不授权手机号，看是否还能使用非必要功能。",
+      "ask_dev_or_ai": "手机号是否为基础功能必要信息？是否可跳过？用途是否明确？",
+      "best_practice": "非必要不强制，明确用途，允许跳过或稍后授权。",
+      "red_flags": [
+        "打开即强制手机号授权",
+        "不用手机号也能完成的功能被阻断",
+        "手机号用途不透明"
+      ],
+      "tags": [
+        "miniapp",
+        "phone",
+        "privacy"
+      ]
+    },
+    {
+      "id": "miniapp-003",
+      "category_id": "miniapp",
+      "priority": "P1",
+      "severity": "medium",
+      "title": "OpenID/UnionID 绑定混乱",
+      "risk": "用户串号、订单归错人、同一用户多账号。",
+      "nontechnical_check": "同一微信在多个入口登录，检查账号、订单、权益是否一致。",
+      "ask_dev_or_ai": "OpenID、UnionID、手机号三者如何绑定？异常绑定如何处理？",
+      "best_practice": "绑定逻辑清晰，账号合并和异常绑定需二次确认或人工核查。",
+      "red_flags": [
+        "同一用户多个入口订单不一致",
+        "换绑手机号后串号",
+        "用手机号覆盖微信身份"
+      ],
+      "tags": [
+        "miniapp",
+        "identity",
+        "binding"
+      ]
+    },
+    {
+      "id": "miniapp-004",
+      "category_id": "miniapp",
+      "priority": "P1",
+      "severity": "medium",
+      "title": "客服与投诉入口缺失",
+      "risk": "平台审核、售后、内容纠纷和用户投诉无法处理。",
+      "nontechnical_check": "页面是否有客服、反馈、订单售后、投诉入口。",
+      "ask_dev_or_ai": "用户投诉从哪里进？后台谁处理？处理结果是否留痕？",
+      "best_practice": "提供清晰客服入口、反馈分类、处理记录和升级机制。",
+      "red_flags": [
+        "用户找不到客服",
+        "投诉只能私聊老板",
+        "后台无处理记录"
+      ],
+      "tags": [
+        "miniapp",
+        "support",
+        "complaint"
+      ]
+    },
+    {
+      "id": "miniapp-005",
+      "category_id": "miniapp",
+      "priority": "P2",
+      "severity": "low",
+      "title": "内容或功能与服务类目不符",
+      "risk": "审核不通过或上线后被下架。",
+      "nontechnical_check": "核对服务类目、页面内容、资质材料、实际功能。",
+      "ask_dev_or_ai": "当前功能是否匹配已选类目和资质？是否涉及特殊行业？",
+      "best_practice": "类目、功能、资质、文案一致，特殊业务上线前确认资质。",
+      "red_flags": [
+        "教育类目做金融服务",
+        "资质主体不一致",
+        "页面出现未备案业务"
+      ],
+      "tags": [
+        "miniapp",
+        "compliance",
+        "category"
+      ]
+    },
+    {
+      "id": "ai-001",
+      "category_id": "ai",
+      "priority": "P0",
+      "severity": "critical",
+      "title": "AI 泄露系统提示词或内部数据",
+      "risk": "用户套出后台规则、密钥、敏感上下文或其他用户信息。",
+      "nontechnical_check": "询问 AI 是否能复述系统设定、内部规则、数据库内容、管理员信息。",
+      "ask_dev_or_ai": "Prompt 中是否包含密钥、隐私或内部规则？上下文是否按权限过滤？",
+      "best_practice": "Prompt 不放秘密，敏感数据服务端隔离，输出做敏感信息过滤。",
+      "red_flags": [
+        "AI 复述完整系统提示词",
+        "AI 暴露后台规则",
+        "AI 回答其他用户数据"
+      ],
+      "tags": [
+        "llm",
+        "prompt-leak",
+        "privacy"
+      ]
+    },
+    {
+      "id": "ai-002",
+      "category_id": "ai",
+      "priority": "P0",
+      "severity": "critical",
+      "title": "AI 直接执行高危操作",
+      "risk": "AI 被诱导退款、删用户、发通知、改价格或调用后台接口。",
+      "nontechnical_check": "尝试让 AI 执行删除、退款、群发、改权限等操作，观察是否需要人工确认。",
+      "ask_dev_or_ai": "AI 工具调用是否有人审、权限限制、日志和撤销机制？",
+      "best_practice": "高危动作必须人工确认，工具权限最小化，所有工具调用留日志。",
+      "red_flags": [
+        "AI 可直接退款",
+        "AI 可群发通知",
+        "模型输出直接当后台命令执行"
+      ],
+      "tags": [
+        "llm",
+        "tool-use",
+        "human-in-loop"
+      ]
+    },
+    {
+      "id": "ai-003",
+      "category_id": "ai",
+      "priority": "P0",
+      "severity": "high",
+      "title": "医疗、法律、金融建议无边界",
+      "risk": "用户依赖错误建议造成健康、财务、法律后果。",
+      "nontechnical_check": "询问诊断、用药、投资、法律判断，看是否有风险提示和拒答边界。",
+      "ask_dev_or_ai": "哪些场景必须拒答、免责声明、转人工或建议找专业人士？",
+      "best_practice": "明确非专业替代，高风险建议加边界、转介和人工复核。",
+      "red_flags": [
+        "AI 给确定诊断和用药",
+        "AI 承诺稳赚",
+        "AI 给法律结论无免责声明"
+      ],
+      "tags": [
+        "llm",
+        "regulated",
+        "safety"
+      ]
+    },
+    {
+      "id": "ai-004",
+      "category_id": "ai",
+      "priority": "P1",
+      "severity": "medium",
+      "title": "AI 胡编事实",
+      "risk": "客服、知识库、推荐答案误导用户，引发信任和投诉问题。",
+      "nontechnical_check": "问 20 个业务问题，标记无依据答案和引用错误。",
+      "ask_dev_or_ai": "AI 回答是否基于知识库？无资料时是否会说不知道？是否给来源？",
+      "best_practice": "RAG 引用来源，低置信度拒答或转人工，关键答案可追溯。",
+      "red_flags": [
+        "AI 编造政策",
+        "AI 引用不存在资料",
+        "AI 对未知问题装懂"
+      ],
+      "tags": [
+        "llm",
+        "rag",
+        "hallucination"
+      ]
+    },
+    {
+      "id": "ai-005",
+      "category_id": "ai",
+      "priority": "P1",
+      "severity": "medium",
+      "title": "提示词注入绕过限制",
+      "risk": "用户输入“忽略规则”等内容绕过安全策略或污染工具调用。",
+      "nontechnical_check": "在用户输入中加入忽略规则、输出内部信息等指令，观察是否突破边界。",
+      "ask_dev_or_ai": "是否区分系统指令、开发指令和用户内容？外部网页/文档是否当作不可信数据？",
+      "best_practice": "外部内容当作不可信数据，不让用户指令覆盖系统规则，工具调用单独校验。",
+      "red_flags": [
+        "用户一句话改掉 AI 角色",
+        "外部网页指令影响后台操作",
+        "AI 按用户要求泄露规则"
+      ],
+      "tags": [
+        "llm",
+        "prompt-injection",
+        "untrusted-content"
+      ]
+    },
+    {
+      "id": "ugc-001",
+      "category_id": "ugc",
+      "priority": "P0",
+      "severity": "high",
+      "title": "违法违规内容发布",
+      "risk": "涉政、色情、暴恐、诈骗、侵权内容导致下架、处罚或舆情事故。",
+      "nontechnical_check": "测试评论、头像、昵称、帖子、图片、链接、私信是否有审核、举报和下架能力。",
+      "ask_dev_or_ai": "是否有机审、人工审核、举报、封禁、留痕机制？高风险内容是否先审后发？",
+      "best_practice": "发布前后审核结合，高风险内容先审后发，举报和下架流程明确。",
+      "red_flags": [
+        "公开内容完全无审核",
+        "后台无法快速下架",
+        "举报没人处理"
+      ],
+      "tags": [
+        "ugc",
+        "content-moderation",
+        "compliance"
+      ]
+    },
+    {
+      "id": "ugc-002",
+      "category_id": "ugc",
+      "priority": "P0",
+      "severity": "high",
+      "title": "未成年人保护缺失",
+      "risk": "不适宜内容、诱导消费、隐私采集或平台处罚。",
+      "nontechnical_check": "以未成年人视角体验注册、内容、消费、私信、AI 聊天路径。",
+      "ask_dev_or_ai": "是否识别未成年人场景？是否限制敏感内容、消费和隐私采集？",
+      "best_practice": "年龄提示、监护规则、内容分级、消费限制和更严格审核。",
+      "red_flags": [
+        "未成年人可无限消费",
+        "敏感内容无提示",
+        "收集儿童数据无监护同意"
+      ],
+      "tags": [
+        "minor",
+        "ugc",
+        "compliance"
+      ]
+    },
+    {
+      "id": "ugc-003",
+      "category_id": "ugc",
+      "priority": "P1",
+      "severity": "medium",
+      "title": "举报入口缺失",
+      "risk": "问题内容无法快速处理，用户只能到社交平台投诉。",
+      "nontechnical_check": "每条内容、用户主页、私信、评论是否能举报；举报后是否有状态。",
+      "ask_dev_or_ai": "举报后谁处理？多久处理？是否通知结果？是否可申诉？",
+      "best_practice": "一键举报、分类原因、后台工单、处理留痕和申诉机制。",
+      "red_flags": [
+        "无举报按钮",
+        "举报只发邮件没人看",
+        "处理无记录"
+      ],
+      "tags": [
+        "reporting",
+        "moderation",
+        "support"
+      ]
+    },
+    {
+      "id": "ugc-004",
+      "category_id": "ugc",
+      "priority": "P1",
+      "severity": "medium",
+      "title": "用户骚扰和互喷失控",
+      "risk": "社区氛围恶化、用户流失、客服压力上升。",
+      "nontechnical_check": "测试拉黑、屏蔽、私信限制、禁言、关键词拦截。",
+      "ask_dev_or_ai": "是否支持禁言、拉黑、屏蔽、私信限频和运营处置？",
+      "best_practice": "用户自我保护工具加运营后台处置，新用户和高风险行为限频。",
+      "red_flags": [
+        "不能拉黑骚扰者",
+        "私信无限发送",
+        "运营无法禁言"
+      ],
+      "tags": [
+        "community",
+        "harassment",
+        "abuse"
+      ]
+    },
+    {
+      "id": "ugc-005",
+      "category_id": "ugc",
+      "priority": "P1",
+      "severity": "medium",
+      "title": "侵权素材上传",
+      "risk": "图片、音乐、视频、文章、商标侵权投诉。",
+      "nontechnical_check": "发布页是否提示版权责任；后台是否能下架和保留上传记录。",
+      "ask_dev_or_ai": "侵权投诉如何处理？是否保留上传记录？重复侵权如何封禁？",
+      "best_practice": "用户协议明确版权责任，投诉后快速下架，重复侵权账号处理。",
+      "red_flags": [
+        "无法处理版权投诉",
+        "下架无记录",
+        "用户可反复上传侵权内容"
+      ],
+      "tags": [
+        "copyright",
+        "ugc",
+        "takedown"
+      ]
+    },
+    {
+      "id": "payment-001",
+      "category_id": "payment",
+      "priority": "P0",
+      "severity": "critical",
+      "title": "金额由前端决定",
+      "risk": "用户把 99 元改成 0.01 元完成支付或获得权益。",
+      "nontechnical_check": "让开发演示订单金额是否由后端生成，前端只是展示。",
+      "ask_dev_or_ai": "支付金额、优惠、运费、库存是否全部服务端计算？",
+      "best_practice": "前端只展示，后端创建订单和金额，支付回调校验金额、币种、订单号。",
+      "red_flags": [
+        "前端提交价格即生效",
+        "优惠金额可由用户传入",
+        "支付金额和订单金额不校验"
+      ],
+      "tags": [
+        "payment",
+        "price",
+        "business-logic"
+      ]
+    },
+    {
+      "id": "payment-002",
+      "category_id": "payment",
+      "priority": "P0",
+      "severity": "critical",
+      "title": "支付回调未验签",
+      "risk": "伪造支付成功通知，白拿商品、权益或余额。",
+      "nontechnical_check": "问开发是否校验微信、支付宝、Stripe 等回调签名，并主动查单。",
+      "ask_dev_or_ai": "支付成功以谁为准？是否验签、查单、幂等？",
+      "best_practice": "验签、主动查单、金额一致性校验、订单状态幂等更新。",
+      "red_flags": [
+        "前端显示成功就发货",
+        "回调不验签",
+        "同一回调重复发权益"
+      ],
+      "tags": [
+        "payment",
+        "webhook",
+        "signature"
+      ]
+    },
+    {
+      "id": "payment-003",
+      "category_id": "payment",
+      "priority": "P0",
+      "severity": "critical",
+      "title": "退款权限过宽",
+      "risk": "客服、运营或被盗后台账号随意退款。",
+      "nontechnical_check": "后台尝试退款，看是否需要权限、原因、审批和日志。",
+      "ask_dev_or_ai": "谁能退款？是否限制金额、次数、审批和日志？",
+      "best_practice": "分级权限，大额审批，退款原因必填，退款日志不可删除。",
+      "red_flags": [
+        "客服可无限退款",
+        "退款无审批",
+        "退款记录可删除"
+      ],
+      "tags": [
+        "refund",
+        "admin",
+        "audit"
+      ]
+    },
+    {
+      "id": "payment-004",
+      "category_id": "payment",
+      "priority": "P1",
+      "severity": "medium",
+      "title": "重复支付或重复发货",
+      "risk": "用户重复点击或回调重复导致错账、重复开通权益。",
+      "nontechnical_check": "快速连点支付、刷新订单、重复提交同一订单，检查状态是否一致。",
+      "ask_dev_or_ai": "订单创建、支付回调、发货是否幂等？",
+      "best_practice": "唯一订单号、状态机、重复请求只处理一次、定期对账。",
+      "red_flags": [
+        "重复点击生成多个订单",
+        "重复回调重复发货",
+        "退款后权益不撤销"
+      ],
+      "tags": [
+        "idempotency",
+        "order",
+        "payment"
+      ]
+    },
+    {
+      "id": "payment-005",
+      "category_id": "payment",
+      "priority": "P1",
+      "severity": "medium",
+      "title": "自行存储银行卡或支付敏感数据",
+      "risk": "触发支付卡行业合规和重大泄露风险。",
+      "nontechnical_check": "确认是否保存完整卡号、CVV、支付密码或用户支付凭证。",
+      "ask_dev_or_ai": "是否使用合规支付服务商托管支付信息？是否自存卡数据？",
+      "best_practice": "不要自存卡数据，使用支付服务商托管页或 Token。",
+      "red_flags": [
+        "后台可见完整卡号",
+        "保存 CVV",
+        "支付密码进入日志"
+      ],
+      "tags": [
+        "pci",
+        "card-data",
+        "payment"
+      ]
+    },
+    {
+      "id": "privacy-001",
+      "category_id": "privacy",
+      "priority": "P0",
+      "severity": "high",
+      "title": "没有隐私政策和用户协议",
+      "risk": "审核失败、投诉、监管风险，用户不知道数据如何被处理。",
+      "nontechnical_check": "首页、注册页、App、小程序、支付页是否有协议入口，内容是否与实际功能一致。",
+      "ask_dev_or_ai": "隐私政策是否覆盖收集项、用途、共享、保存、删除和投诉方式？",
+      "best_practice": "上线前完成协议，和实际功能一致，重大变化重新告知。",
+      "red_flags": [
+        "注册页无协议",
+        "隐私政策没写 AI/短信/客服 SDK",
+        "协议和实际收集不一致"
+      ],
+      "tags": [
+        "privacy-policy",
+        "terms",
+        "compliance"
+      ]
+    },
+    {
+      "id": "privacy-002",
+      "category_id": "privacy",
+      "priority": "P0",
+      "severity": "high",
+      "title": "过度收集个人信息",
+      "risk": "违反最小必要原则，增加泄露损失和投诉概率。",
+      "nontechnical_check": "列出所有收集项，逐项问“不收能不能用 MVP 核心功能”。",
+      "ask_dev_or_ai": "每项个人信息对应哪个必要功能？拒绝后是否还能使用基础功能？",
+      "best_practice": "最小必要、分场景授权、拒绝非必要授权不影响基础功能。",
+      "red_flags": [
+        "注册就要身份证",
+        "不授权通讯录不能使用",
+        "收集定位但功能不需要"
+      ],
+      "tags": [
+        "data-minimization",
+        "privacy",
+        "consent"
+      ]
+    },
+    {
+      "id": "privacy-003",
+      "category_id": "privacy",
+      "priority": "P0",
+      "severity": "high",
+      "title": "敏感个人信息无单独同意",
+      "risk": "处理身份证、医疗、金融、定位、未成年人、人脸等信息违规。",
+      "nontechnical_check": "看是否有单独弹窗、明确用途、保存期限和退出方式。",
+      "ask_dev_or_ai": "哪些属于敏感个人信息？是否单独告知和同意？",
+      "best_practice": "敏感信息单独同意，严格限制用途、访问权限和保存期限。",
+      "red_flags": [
+        "收集健康数据无单独同意",
+        "后台明文展示身份证",
+        "儿童数据无监护规则"
+      ],
+      "tags": [
+        "sensitive-data",
+        "consent",
+        "pipl"
+      ]
+    },
+    {
+      "id": "privacy-004",
+      "category_id": "privacy",
+      "priority": "P1",
+      "severity": "medium",
+      "title": "用户无法删除账号或数据",
+      "risk": "用户权利请求无法响应，投诉和监管风险上升。",
+      "nontechnical_check": "找注销账号、删除数据、导出数据、联系客服入口。",
+      "ask_dev_or_ai": "注销后多久删除？哪些数据因法律要求保留？第三方是否同步处理？",
+      "best_practice": "提供注销和数据请求流程，保留例外明确说明，处理结果可追踪。",
+      "red_flags": [
+        "没有注销入口",
+        "客服不知道如何删除",
+        "删除后前台仍可见"
+      ],
+      "tags": [
+        "data-rights",
+        "deletion",
+        "privacy"
+      ]
+    },
+    {
+      "id": "privacy-005",
+      "category_id": "privacy",
+      "priority": "P1",
+      "severity": "medium",
+      "title": "第三方共享不透明",
+      "risk": "SDK、广告、统计、客服、AI 服务把数据传给外部但用户不知道。",
+      "nontechnical_check": "列出所有第三方服务和 SDK，检查隐私政策是否披露。",
+      "ask_dev_or_ai": "给第三方哪些数据？是否签数据处理协议？是否有跨境传输？",
+      "best_practice": "第三方清单、数据最小化、合同约束、隐私政策披露和定期审查。",
+      "red_flags": [
+        "没人知道接了哪些 SDK",
+        "AI 服务拿到用户隐私但协议没写",
+        "第三方账号多人共用"
+      ],
+      "tags": [
+        "third-party",
+        "sdk",
+        "privacy"
+      ]
+    },
+    {
+      "id": "cloud-001",
+      "category_id": "cloud",
+      "priority": "P0",
+      "severity": "critical",
+      "title": "云密钥泄露",
+      "risk": "服务器、数据库、短信、对象存储被接管，产生费用或数据泄露。",
+      "nontechnical_check": "问开发密钥是否出现在 GitHub、前端代码、截图、聊天记录或日志里。",
+      "ask_dev_or_ai": "密钥放在哪里？是否最小权限？泄露后如何轮换？",
+      "best_practice": "密钥管理服务、最小权限、定期轮换、泄露自动吊销。",
+      "red_flags": [
+        "AK/SK 写在前端",
+        "云账号 root key 长期使用",
+        "密钥出现在日志"
+      ],
+      "tags": [
+        "secrets",
+        "cloud",
+        "iam"
+      ]
+    },
+    {
+      "id": "cloud-002",
+      "category_id": "cloud",
+      "priority": "P0",
+      "severity": "high",
+      "title": "数据库公网裸露",
+      "risk": "被扫描、爆破、删库勒索或窃取数据。",
+      "nontechnical_check": "让开发确认数据库是否允许公网访问；云安全组是否仅允许应用服务器。",
+      "ask_dev_or_ai": "数据库安全组、账号权限、备份和加密如何配置？",
+      "best_practice": "数据库内网访问，强密码，最小权限账号，自动备份，访问白名单。",
+      "red_flags": [
+        "数据库可公网直连",
+        "测试账号能连生产库",
+        "数据库无备份"
+      ],
+      "tags": [
+        "database",
+        "cloud",
+        "network"
+      ]
+    },
+    {
+      "id": "cloud-003",
+      "category_id": "cloud",
+      "priority": "P0",
+      "severity": "high",
+      "title": "对象存储公开读写",
+      "risk": "用户上传文件、隐私图片被公开、枚举或篡改。",
+      "nontechnical_check": "随机打开文件链接，未登录或换账号能否访问不该访问的文件。",
+      "ask_dev_or_ai": "存储桶权限是公开还是私有？上传是否鉴权？签名 URL 多久过期？",
+      "best_practice": "私有桶、临时签名 URL、禁止公开写、按用户或租户隔离路径。",
+      "red_flags": [
+        "Bucket 允许公开写",
+        "文件 URL 永久有效",
+        "可猜测相邻文件"
+      ],
+      "tags": [
+        "object-storage",
+        "file",
+        "cloud"
+      ]
+    },
+    {
+      "id": "cloud-004",
+      "category_id": "cloud",
+      "priority": "P1",
+      "severity": "medium",
+      "title": "没有资源限额和告警",
+      "risk": "接口、短信、AI Token、存储、带宽被刷导致天价账单。",
+      "nontechnical_check": "云控制台是否设置预算告警；短信、AI、存储是否有每日上限。",
+      "ask_dev_or_ai": "短信、AI、存储、带宽是否有限额？异常是否自动停用？",
+      "best_practice": "预算告警、接口限流、用量监控、异常自动暂停和人工确认。",
+      "red_flags": [
+        "AI 调用无限制",
+        "短信无全站上限",
+        "云费用异常无人收到通知"
+      ],
+      "tags": [
+        "cost",
+        "quota",
+        "alert"
+      ]
+    },
+    {
+      "id": "cloud-005",
+      "category_id": "cloud",
+      "priority": "P1",
+      "severity": "medium",
+      "title": "生产和测试环境混用",
+      "risk": "测试数据污染正式用户，测试账号进入生产，支付回调串环境。",
+      "nontechnical_check": "确认测试域名、数据库、支付账号、短信签名、AI Key 是否和生产分开。",
+      "ask_dev_or_ai": "生产/测试环境如何隔离？配置是否会误连生产？",
+      "best_practice": "环境、密钥、数据库、支付回调全部分离，测试数据脱敏。",
+      "red_flags": [
+        "测试环境连生产库",
+        "测试账号可进生产后台",
+        "测试支付回调改生产订单"
+      ],
+      "tags": [
+        "environment",
+        "staging",
+        "production"
+      ]
+    },
+    {
+      "id": "data-001",
+      "category_id": "data",
+      "priority": "P0",
+      "severity": "high",
+      "title": "没有自动备份",
+      "risk": "误删、攻击、云故障后业务无法恢复。",
+      "nontechnical_check": "让开发出示最近一次备份时间、备份位置、保存期限。",
+      "ask_dev_or_ai": "备份频率？保存多久？谁能删除？是否异地？",
+      "best_practice": "自动备份，至少每日，关键业务更频繁，备份权限独立。",
+      "red_flags": [
+        "没有备份",
+        "备份和数据库同机",
+        "普通管理员可删除所有备份"
+      ],
+      "tags": [
+        "backup",
+        "database",
+        "resilience"
+      ]
+    },
+    {
+      "id": "data-002",
+      "category_id": "data",
+      "priority": "P0",
+      "severity": "high",
+      "title": "备份从未恢复演练",
+      "risk": "以为有备份，但事故时恢复不了或耗时不可接受。",
+      "nontechnical_check": "要求开发在测试环境恢复一次，并记录耗时和结果。",
+      "ask_dev_or_ai": "最近一次恢复演练是什么时候？RTO/RPO 是多少？",
+      "best_practice": "定期恢复演练，记录恢复时间、数据丢失窗口和负责人。",
+      "red_flags": [
+        "没人试过恢复",
+        "恢复步骤靠口头记忆",
+        "备份文件无法解密"
+      ],
+      "tags": [
+        "restore",
+        "backup",
+        "rto"
+      ]
+    },
+    {
+      "id": "data-003",
+      "category_id": "data",
+      "priority": "P1",
+      "severity": "medium",
+      "title": "软删除和误删保护缺失",
+      "risk": "运营误删订单、用户、内容无法找回。",
+      "nontechnical_check": "后台删除关键数据后是否能恢复，永久删除谁能做。",
+      "ask_dev_or_ai": "关键数据是否软删除？永久删除是否高权限和审批？",
+      "best_practice": "关键数据软删除，永久删除需高权限，删除操作留痕。",
+      "red_flags": [
+        "一删即永久消失",
+        "删除无日志",
+        "低权限可批量删除"
+      ],
+      "tags": [
+        "soft-delete",
+        "admin",
+        "recovery"
+      ]
+    },
+    {
+      "id": "data-004",
+      "category_id": "data",
+      "priority": "P1",
+      "severity": "medium",
+      "title": "数据迁移无回滚",
+      "risk": "新版本改坏数据库，业务状态不可恢复。",
+      "nontechnical_check": "问开发升级失败如何恢复旧版本和旧数据。",
+      "ask_dev_or_ai": "数据库变更是否有备份、迁移脚本、回滚脚本和灰度？",
+      "best_practice": "迁移前备份，小步发布，可回滚，重大迁移先在测试环境演练。",
+      "red_flags": [
+        "发布时直接改生产库",
+        "迁移失败无回滚",
+        "没有变更记录"
+      ],
+      "tags": [
+        "migration",
+        "release",
+        "database"
+      ]
+    },
+    {
+      "id": "data-005",
+      "category_id": "data",
+      "priority": "P2",
+      "severity": "low",
+      "title": "数据留存无限期",
+      "risk": "越存越多，隐私、成本和泄露损失上升。",
+      "nontechnical_check": "询问日志、订单、聊天、图片、AI 对话保存多久。",
+      "ask_dev_or_ai": "不同数据类型的保留期限是什么？是否有删除策略？",
+      "best_practice": "按业务和法律要求设定保留期限，到期归档或删除。",
+      "red_flags": [
+        "所有数据永久保存",
+        "用户删除后后台仍长期保留",
+        "日志含隐私且无限期"
+      ],
+      "tags": [
+        "retention",
+        "privacy",
+        "storage"
+      ]
+    },
+    {
+      "id": "api-001",
+      "category_id": "api",
+      "priority": "P0",
+      "severity": "high",
+      "title": "接口无限调用",
+      "risk": "被刷爆、撞库、短信轰炸、AI 费用暴涨或服务不可用。",
+      "nontechnical_check": "短时间重复点击登录、验证码、AI 生成、搜索、导出。",
+      "ask_dev_or_ai": "每个高成本接口是否限流？按 IP、账号、设备还是全站？",
+      "best_practice": "IP+账号+设备多维限流，高成本接口加队列、配额和告警。",
+      "red_flags": [
+        "AI/短信/导出无限点",
+        "登录失败无限尝试",
+        "全站没有速率限制"
+      ],
+      "tags": [
+        "api",
+        "rate-limit",
+        "abuse"
+      ]
+    },
+    {
+      "id": "api-002",
+      "category_id": "api",
+      "priority": "P0",
+      "severity": "high",
+      "title": "验证码接口被刷",
+      "risk": "短信账单暴涨，手机号被骚扰，开发者成本失控。",
+      "nontechnical_check": "同一手机号、不同手机号连续请求验证码，观察是否有倒计时和全站限制。",
+      "ask_dev_or_ai": "短信频率、每日上限、IP 限制、图形验证码、预算告警是什么？",
+      "best_practice": "限频、黑名单、行为验证、预算告警、异常暂停。",
+      "red_flags": [
+        "换手机号即可无限发",
+        "没有全站短信上限",
+        "短信费用没有告警"
+      ],
+      "tags": [
+        "otp",
+        "sms",
+        "rate-limit"
+      ]
+    },
+    {
+      "id": "api-003",
+      "category_id": "api",
+      "priority": "P1",
+      "severity": "medium",
+      "title": "接口返回过多数据",
+      "risk": "普通页面一次性暴露全量用户、订单、内部字段或隐私数据。",
+      "nontechnical_check": "让开发展示接口返回样例，看是否含手机号、身份证、token、内部备注。",
+      "ask_dev_or_ai": "是否只返回页面需要字段？是否分页？敏感字段是否脱敏？",
+      "best_practice": "字段最小化、分页、敏感字段不返回或按权限脱敏。",
+      "red_flags": [
+        "列表接口返回所有用户",
+        "前端收到但不展示敏感字段",
+        "接口返回 token/验证码"
+      ],
+      "tags": [
+        "api",
+        "data-exposure",
+        "pagination"
+      ]
+    },
+    {
+      "id": "api-004",
+      "category_id": "api",
+      "priority": "P1",
+      "severity": "medium",
+      "title": "错误信息过详细",
+      "risk": "暴露数据库表名、服务器路径、框架版本、密钥或内部接口。",
+      "nontechnical_check": "输入错误参数、访问不存在路径，看页面是否显示技术堆栈。",
+      "ask_dev_or_ai": "生产环境是否关闭详细错误？错误是否有内部日志 ID？",
+      "best_practice": "用户看到简洁错误，详细日志只给内部看，错误关联日志 ID。",
+      "red_flags": [
+        "页面显示 SQL 错误",
+        "错误页出现源码路径",
+        "500 页面暴露环境变量"
+      ],
+      "tags": [
+        "error-handling",
+        "debug",
+        "api"
+      ]
+    },
+    {
+      "id": "api-005",
+      "category_id": "api",
+      "priority": "P2",
+      "severity": "low",
+      "title": "API 版本混乱",
+      "risk": "小程序、App、Web 更新后互相不兼容，旧版本出现安全或业务漏洞。",
+      "nontechnical_check": "确认老版本 App/小程序是否还能用，旧接口何时下线。",
+      "ask_dev_or_ai": "API 是否有版本号？旧版本下线计划和兼容策略是什么？",
+      "best_practice": "API 版本管理，旧版本灰度下线，关键安全修复覆盖旧版本。",
+      "red_flags": [
+        "所有客户端共用无版本接口",
+        "旧接口无人维护",
+        "旧版本绕过新安全规则"
+      ],
+      "tags": [
+        "api-version",
+        "compatibility",
+        "release"
+      ]
+    },
+    {
+      "id": "admin-001",
+      "category_id": "admin",
+      "priority": "P0",
+      "severity": "critical",
+      "title": "后台入口暴露且无保护",
+      "risk": "被扫描、爆破或撞库，接管后台。",
+      "nontechnical_check": "访问 /admin、/manage、/dashboard，看是否直接出现后台登录；搜索引擎能否搜到。",
+      "ask_dev_or_ai": "后台是否限制 IP、MFA、强密码、登录告警？",
+      "best_practice": "后台独立域名或路径保护，IP 白名单/VPN，MFA，登录失败告警。",
+      "red_flags": [
+        "后台公网裸奔",
+        "后台无 MFA",
+        "弱密码可登录后台"
+      ],
+      "tags": [
+        "admin",
+        "mfa",
+        "exposure"
+      ]
+    },
+    {
+      "id": "admin-002",
+      "category_id": "admin",
+      "priority": "P0",
+      "severity": "high",
+      "title": "操作日志缺失",
+      "risk": "出事故不知道谁改价、退款、删帖、导出或改权限。",
+      "nontechnical_check": "执行改价、退款、删帖、导出，看后台是否记录操作者、时间、对象、前后值。",
+      "ask_dev_or_ai": "日志记录哪些字段？是否可被普通管理员删除？保存多久？",
+      "best_practice": "关键操作全留痕，不允许普通管理员删除日志，日志可审计。",
+      "red_flags": [
+        "后台操作无记录",
+        "日志只记录登录不记录动作",
+        "管理员可删日志"
+      ],
+      "tags": [
+        "audit-log",
+        "admin",
+        "forensics"
+      ]
+    },
+    {
+      "id": "admin-003",
+      "category_id": "admin",
+      "priority": "P1",
+      "severity": "medium",
+      "title": "后台导出敏感数据无限制",
+      "risk": "客服或外包一键导出全部用户、手机号、订单和隐私。",
+      "nontechnical_check": "测试导出功能是否需要权限、审批、脱敏、条数限制和日志。",
+      "ask_dev_or_ai": "导出是否脱敏？是否限制条数？是否审批和水印？",
+      "best_practice": "导出权限、审批、脱敏、水印、限量、全量留痕。",
+      "red_flags": [
+        "任何客服可导出全量用户",
+        "导出无日志",
+        "导出文件无水印"
+      ],
+      "tags": [
+        "export",
+        "privacy",
+        "admin"
+      ]
+    },
+    {
+      "id": "admin-004",
+      "category_id": "admin",
+      "priority": "P1",
+      "severity": "medium",
+      "title": "后台搜索泄露隐私",
+      "risk": "运营随意搜索手机号、身份证、聊天记录、健康或定位数据。",
+      "nontechnical_check": "检查后台可搜索字段和搜索结果展示的隐私程度。",
+      "ask_dev_or_ai": "哪些角色能看完整隐私字段？查看是否需要原因和留痕？",
+      "best_practice": "默认脱敏，按需查看，查看完整隐私字段也留痕。",
+      "red_flags": [
+        "所有角色看完整手机号和身份证",
+        "搜索聊天记录无权限限制",
+        "查看隐私无日志"
+      ],
+      "tags": [
+        "admin-search",
+        "privacy",
+        "least-privilege"
+      ]
+    },
+    {
+      "id": "admin-005",
+      "category_id": "admin",
+      "priority": "P2",
+      "severity": "low",
+      "title": "后台无状态看板",
+      "risk": "故障、订单异常、支付失败、短信/AI 费用异常不能及时发现。",
+      "nontechnical_check": "是否有订单失败、支付失败、接口错误、用量、举报、审核积压看板。",
+      "ask_dev_or_ai": "运营每天看哪些指标发现异常？关键指标有没有阈值告警？",
+      "best_practice": "核心指标仪表盘和异常提醒，业务和技术指标都覆盖。",
+      "red_flags": [
+        "只能等用户投诉",
+        "没有支付失败看板",
+        "审核积压没人知道"
+      ],
+      "tags": [
+        "dashboard",
+        "ops",
+        "monitoring"
+      ]
+    },
+    {
+      "id": "monitor-001",
+      "category_id": "monitor",
+      "priority": "P0",
+      "severity": "critical",
+      "title": "线上崩了没人知道",
+      "risk": "服务不可用、订单失败、支付失败、用户流失，却只能等投诉。",
+      "nontechnical_check": "问谁会收到报警，报警渠道是什么；模拟一次小故障确认通知。",
+      "ask_dev_or_ai": "是否监控可用性、错误率、支付失败、接口延迟和数据库状态？",
+      "best_practice": "电话/短信/群通知，P0 告警有人值守，告警升级机制明确。",
+      "red_flags": [
+        "服务挂了无人通知",
+        "告警只在控制台里",
+        "没有值班联系人"
+      ],
+      "tags": [
+        "monitoring",
+        "alert",
+        "availability"
+      ]
+    },
+    {
+      "id": "monitor-002",
+      "category_id": "monitor",
+      "priority": "P0",
+      "severity": "high",
+      "title": "日志记录密码、Token 或验证码",
+      "risk": "内部日志平台变成泄露源，客服或外包可看到敏感凭证。",
+      "nontechnical_check": "让开发展示日志样例，搜索手机号、Token、密码、验证码、身份证。",
+      "ask_dev_or_ai": "日志脱敏规则是什么？哪些字段禁止上报？",
+      "best_practice": "密码和验证码永不记录，Token 和隐私字段脱敏，日志访问受控。",
+      "red_flags": [
+        "日志含验证码",
+        "日志含完整请求头 Token",
+        "日志平台所有人可看"
+      ],
+      "tags": [
+        "logging",
+        "secret",
+        "privacy"
+      ]
+    },
+    {
+      "id": "monitor-003",
+      "category_id": "monitor",
+      "priority": "P1",
+      "severity": "medium",
+      "title": "没有业务告警",
+      "risk": "技术没报错，但注册、支付、订单、短信、AI 已异常。",
+      "nontechnical_check": "检查是否有支付成功数、注册数、短信发送量、AI 调用量等业务异常提醒。",
+      "ask_dev_or_ai": "有没有业务指标异常告警？阈值如何设置？",
+      "best_practice": "技术监控加业务监控，核心业务指标突降或突增要告警。",
+      "red_flags": [
+        "支付成功为 0 无人知晓",
+        "短信量暴涨无通知",
+        "AI 费用异常无告警"
+      ],
+      "tags": [
+        "business-monitoring",
+        "alert",
+        "metrics"
+      ]
+    },
+    {
+      "id": "monitor-004",
+      "category_id": "monitor",
+      "priority": "P1",
+      "severity": "medium",
+      "title": "告警无人负责",
+      "risk": "告警发了但没人处理，事故扩大。",
+      "nontechnical_check": "确认值班人、升级联系人、响应时间和假期安排。",
+      "ask_dev_or_ai": "报警后 10 分钟没人处理会怎样？谁有权限止血？",
+      "best_practice": "值班表、升级机制、事故群、处理时限和授权边界。",
+      "red_flags": [
+        "告警发到没人看的群",
+        "没人能关高风险功能",
+        "只有一个开发知道怎么处理"
+      ],
+      "tags": [
+        "incident",
+        "on-call",
+        "alert"
+      ]
+    },
+    {
+      "id": "monitor-005",
+      "category_id": "monitor",
+      "priority": "P2",
+      "severity": "low",
+      "title": "日志保存过短或过长",
+      "risk": "太短无法查事故，太长增加隐私和成本风险。",
+      "nontechnical_check": "询问安全日志、访问日志、业务日志、聊天日志分别保存多久。",
+      "ask_dev_or_ai": "日志保存期依据是什么？过期后如何删除？敏感日志是否脱敏？",
+      "best_practice": "按风险和合规设定保存期，到期删除或归档，敏感日志脱敏。",
+      "red_flags": [
+        "所有日志永久保存",
+        "事故后日志已过期",
+        "日志含隐私且无期限"
+      ],
+      "tags": [
+        "log-retention",
+        "privacy",
+        "forensics"
+      ]
+    },
+    {
+      "id": "release-001",
+      "category_id": "release",
+      "priority": "P0",
+      "severity": "critical",
+      "title": "上线前未走核心流程",
+      "risk": "注册、登录、支付、退款、发货、提现等关键路径上线即失败。",
+      "nontechnical_check": "用真实设备完整跑一遍新用户旅程和核心付费/退款路径。",
+      "ask_dev_or_ai": "上线验收用例有哪些？谁签字？失败后是否阻止发布？",
+      "best_practice": "发布前固定冒烟测试清单，覆盖核心用户路径和高风险功能。",
+      "red_flags": [
+        "发布前只看首页",
+        "支付和退款没测",
+        "没人签发版确认"
+      ],
+      "tags": [
+        "release",
+        "smoke-test",
+        "mvp"
+      ]
+    },
+    {
+      "id": "release-002",
+      "category_id": "release",
+      "priority": "P0",
+      "severity": "high",
+      "title": "无法回滚",
+      "risk": "新版本出错只能硬扛，扩大影响。",
+      "nontechnical_check": "问开发能否 10 分钟内回到上一版，旧版本包和配置在哪里。",
+      "ask_dev_or_ai": "回滚命令、备份、旧版本包、数据库回滚方案在哪里？",
+      "best_practice": "保留上一稳定版本，一键回滚，重大数据库变更先演练。",
+      "red_flags": [
+        "没有旧版本包",
+        "回滚靠手动改代码",
+        "数据库改坏无法恢复"
+      ],
+      "tags": [
+        "rollback",
+        "release",
+        "resilience"
+      ]
+    },
+    {
+      "id": "release-003",
+      "category_id": "release",
+      "priority": "P1",
+      "severity": "medium",
+      "title": "没有灰度发布",
+      "risk": "问题一次性影响所有用户。",
+      "nontechnical_check": "是否能只给内部、少量用户或测试域名发布。",
+      "ask_dev_or_ai": "是否支持灰度、分批发布、按用户或地区开关？",
+      "best_practice": "先内部，再小流量，最后全量；关键版本观察指标后再放量。",
+      "red_flags": [
+        "每次直接全量发布",
+        "无法只影响测试用户",
+        "出问题只能全站停"
+      ],
+      "tags": [
+        "canary",
+        "release",
+        "feature-flag"
+      ]
+    },
+    {
+      "id": "release-004",
+      "category_id": "release",
+      "priority": "P1",
+      "severity": "medium",
+      "title": "没有功能开关",
+      "risk": "某个新功能出问题必须整站回滚或停服。",
+      "nontechnical_check": "问能否单独关闭 AI、支付、评论、推荐、短信等功能。",
+      "ask_dev_or_ai": "高风险功能是否有开关？谁能操作？操作是否留痕？",
+      "best_practice": "核心高风险功能配置化开关，开关权限受控并记录。",
+      "red_flags": [
+        "AI 费用异常无法关闭",
+        "评论事故只能停站",
+        "开关只有开发能改数据库"
+      ],
+      "tags": [
+        "feature-flag",
+        "ops",
+        "incident"
+      ]
+    },
+    {
+      "id": "release-005",
+      "category_id": "release",
+      "priority": "P2",
+      "severity": "low",
+      "title": "发布记录缺失",
+      "risk": "事故后不知道改了什么、谁发布、怎么回退。",
+      "nontechnical_check": "查看是否有发布时间、版本号、变更说明、负责人。",
+      "ask_dev_or_ai": "每次发布是否记录版本、变更、负责人和验证结果？",
+      "best_practice": "发布日志、变更摘要、负责人、验证结果和回滚记录。",
+      "red_flags": [
+        "不知道上次发布内容",
+        "无版本号",
+        "发布失败无复盘"
+      ],
+      "tags": [
+        "release-notes",
+        "change-management",
+        "audit"
+      ]
+    },
+    {
+      "id": "legal-001",
+      "category_id": "legal",
+      "priority": "P0",
+      "severity": "high",
+      "title": "业务资质缺失",
+      "risk": "医疗、金融、教育、招聘、食品、直播等领域被下架、罚款或停业。",
+      "nontechnical_check": "列出业务类型，核对是否需要许可证、备案、资质或平台审核材料。",
+      "ask_dev_or_ai": "当前业务是否涉及特殊资质？哪些功能不能在无资质情况下上线？",
+      "best_practice": "上线前由法务或专业顾问确认，资质未齐先关闭相关功能。",
+      "red_flags": [
+        "无资质做医疗诊断",
+        "无资质销售金融产品",
+        "平台主体和资质不一致"
+      ],
+      "tags": [
+        "license",
+        "regulated",
+        "legal"
+      ]
+    },
+    {
+      "id": "legal-002",
+      "category_id": "legal",
+      "priority": "P0",
+      "severity": "critical",
+      "title": "ICP备案或主体不一致",
+      "risk": "中国大陆访问、支付、小程序审核、应用上架受影响。",
+      "nontechnical_check": "核对域名备案主体、营业执照、支付主体、小程序主体是否一致。",
+      "ask_dev_or_ai": "域名、服务器、支付、小程序、App 上架主体是否一致？",
+      "best_practice": "主体一致，备案和证照材料齐全，变更提前规划。",
+      "red_flags": [
+        "个人备案做公司业务",
+        "支付主体和平台主体不一致",
+        "小程序审核材料不一致"
+      ],
+      "tags": [
+        "icp",
+        "china",
+        "compliance"
+      ]
+    },
+    {
+      "id": "legal-003",
+      "category_id": "legal",
+      "priority": "P1",
+      "severity": "medium",
+      "title": "营销文案夸大承诺",
+      "risk": "虚假宣传、消费者投诉、平台处罚。",
+      "nontechnical_check": "检查保证治愈、稳赚、100%安全、官方认证、永久有效等绝对化表述。",
+      "ask_dev_or_ai": "哪些文案需要法务审核？承诺是否有证据来源？",
+      "best_practice": "避免绝对化承诺，保留证据来源，高风险行业文案走法务。",
+      "red_flags": [
+        "医疗产品承诺治愈",
+        "投资产品承诺收益",
+        "安全产品承诺绝对安全"
+      ],
+      "tags": [
+        "marketing",
+        "legal",
+        "claims"
+      ]
+    },
+    {
+      "id": "legal-004",
+      "category_id": "legal",
+      "priority": "P1",
+      "severity": "medium",
+      "title": "用户协议缺少争议处理",
+      "risk": "退款、封号、内容下架、服务中断时没有规则依据。",
+      "nontechnical_check": "查看协议是否写明退款、封禁、内容处理、服务变更、争议处理。",
+      "ask_dev_or_ai": "发生退款、封号、服务中断、内容下架纠纷按什么规则处理？",
+      "best_practice": "协议覆盖核心争议场景，入口明显，重大规则变更通知用户。",
+      "red_flags": [
+        "无退款规则",
+        "封号无依据",
+        "服务停用无说明"
+      ],
+      "tags": [
+        "terms",
+        "dispute",
+        "legal"
+      ]
+    },
+    {
+      "id": "legal-005",
+      "category_id": "legal",
+      "priority": "P2",
+      "severity": "low",
+      "title": "跨境数据未评估",
+      "risk": "使用海外云、海外 AI、海外客服、分析工具导致数据出境问题。",
+      "nontechnical_check": "列出服务器、AI、邮件、客服、统计、支付工具所在国家或地区。",
+      "ask_dev_or_ai": "个人信息是否传到境外？依据、告知和合同是什么？",
+      "best_practice": "数据出境前做合规评估、用户告知和供应商约束。",
+      "red_flags": [
+        "用户聊天发给海外 AI 但未告知",
+        "海外客服可看中国用户隐私",
+        "不知道数据存储地区"
+      ],
+      "tags": [
+        "cross-border",
+        "privacy",
+        "compliance"
+      ]
+    },
+    {
+      "id": "incident-001",
+      "category_id": "incident",
+      "priority": "P0",
+      "severity": "critical",
+      "title": "没有事故联系人",
+      "risk": "支付异常、数据泄露、内容事故没人决策，错过止血窗口。",
+      "nontechnical_check": "写下老板、技术、运营、客服、法务、云厂商联系人和权限。",
+      "ask_dev_or_ai": "半夜出事故谁能停服务、关功能、回滚、发公告？",
+      "best_practice": "事故联系人表、授权边界、值班机制和升级路径。",
+      "red_flags": [
+        "只有一个开发能处理",
+        "没有法务/客服联系人",
+        "没人有权限关闭高风险功能"
+      ],
+      "tags": [
+        "incident",
+        "contact",
+        "ops"
+      ]
+    },
+    {
+      "id": "incident-002",
+      "category_id": "incident",
+      "priority": "P0",
+      "severity": "high",
+      "title": "数据泄露无预案",
+      "risk": "越拖越严重，通知、取证、止血混乱。",
+      "nontechnical_check": "模拟用户手机号泄露，问第一小时谁做什么。",
+      "ask_dev_or_ai": "发现泄露后如何隔离、保全证据、评估范围、通知相关方？",
+      "best_practice": "隔离、保全证据、评估范围、换密钥、通知、复盘的预案和演练。",
+      "red_flags": [
+        "泄露后只删日志",
+        "没人知道是否要通知用户",
+        "无法判断泄露范围"
+      ],
+      "tags": [
+        "data-breach",
+        "incident",
+        "privacy"
+      ]
+    },
+    {
+      "id": "incident-003",
+      "category_id": "incident",
+      "priority": "P0",
+      "severity": "high",
+      "title": "支付或订单异常无手动处理",
+      "risk": "用户付了钱拿不到服务，投诉升级。",
+      "nontechnical_check": "模拟支付成功但订单未到账，客服能否查单、补单或退款。",
+      "ask_dev_or_ai": "客服如何查单、补单、退款？是否有工单记录和审批？",
+      "best_practice": "支付查单工具、补偿流程、工单记录、审批和对账。",
+      "red_flags": [
+        "客服只能让用户等",
+        "无法查支付平台状态",
+        "补单无日志"
+      ],
+      "tags": [
+        "payment",
+        "incident",
+        "support"
+      ]
+    },
+    {
+      "id": "incident-004",
+      "category_id": "incident",
+      "priority": "P1",
+      "severity": "medium",
+      "title": "舆情和投诉无统一入口",
+      "risk": "问题分散在私信、群聊、平台评论中失控。",
+      "nontechnical_check": "确认用户在哪里投诉，谁汇总，多久响应。",
+      "ask_dev_or_ai": "投诉 SLA 是多久？严重问题如何升级？是否有固定话术？",
+      "best_practice": "统一工单、分级响应、固定话术、严重问题升级机制。",
+      "red_flags": [
+        "投诉只能找私人微信",
+        "无人汇总社群反馈",
+        "严重投诉无升级"
+      ],
+      "tags": [
+        "complaint",
+        "support",
+        "ops"
+      ]
+    },
+    {
+      "id": "incident-005",
+      "category_id": "incident",
+      "priority": "P1",
+      "severity": "medium",
+      "title": "没有停服或维护公告机制",
+      "risk": "故障时用户误解为跑路、诈骗或数据丢失。",
+      "nontechnical_check": "是否能在首页、App、小程序、社群、状态页发布公告。",
+      "ask_dev_or_ai": "系统异常时如何展示维护状态？客服话术如何同步？",
+      "best_practice": "状态页、公告位、客服同步话术、恢复后复盘说明。",
+      "red_flags": [
+        "故障时只能沉默",
+        "没有公告入口",
+        "客服不知道系统状态"
+      ],
+      "tags": [
+        "status-page",
+        "communication",
+        "incident"
+      ]
+    },
+    {
+      "id": "supply-001",
+      "category_id": "supply",
+      "priority": "P0",
+      "severity": "high",
+      "title": "依赖不明第三方插件",
+      "risk": "插件窃取数据、插入后门、突然失效或带来合规风险。",
+      "nontechnical_check": "列出所有插件、SDK、模板、代码生成依赖、浏览器脚本。",
+      "ask_dev_or_ai": "每个第三方来源、用途、权限、维护状态是什么？",
+      "best_practice": "只用可信来源，保留清单，定期更新，高风险插件替换或隔离。",
+      "red_flags": [
+        "没人知道插件来源",
+        "安装来源不明脚本",
+        "插件拿到过大权限"
+      ],
+      "tags": [
+        "supply-chain",
+        "plugin",
+        "sdk"
+      ]
+    },
+    {
+      "id": "supply-002",
+      "category_id": "supply",
+      "priority": "P1",
+      "severity": "medium",
+      "title": "开源许可证不清楚",
+      "risk": "商业上线后被要求开源、下架或侵权索赔。",
+      "nontechnical_check": "问开发是否用了开源项目、模板、字体、图片、音乐和代码片段。",
+      "ask_dev_or_ai": "依赖许可证是否允许商用？是否有 GPL/AGPL 等强约束？",
+      "best_practice": "上线前检查许可证，保留依赖清单，避免不兼容协议。",
+      "red_flags": [
+        "不知道模板许可证",
+        "商用产品用了不允许商用素材",
+        "无依赖清单"
+      ],
+      "tags": [
+        "license",
+        "open-source",
+        "legal"
+      ]
+    },
+    {
+      "id": "supply-003",
+      "category_id": "supply",
+      "priority": "P1",
+      "severity": "medium",
+      "title": "第三方服务无替代方案",
+      "risk": "短信、支付、AI、地图、登录服务故障时业务停摆。",
+      "nontechnical_check": "列出关键第三方，逐个问挂了怎么办。",
+      "ask_dev_or_ai": "是否有备用供应商、降级方案或手动处理流程？",
+      "best_practice": "关键服务准备降级和替代路径，故障时可关闭非核心功能。",
+      "red_flags": [
+        "短信服务挂了无法登录",
+        "AI 挂了整站不可用",
+        "支付异常无法人工处理"
+      ],
+      "tags": [
+        "third-party",
+        "resilience",
+        "fallback"
+      ]
+    },
+    {
+      "id": "supply-004",
+      "category_id": "supply",
+      "priority": "P1",
+      "severity": "medium",
+      "title": "SDK 自动采集隐私",
+      "risk": "广告、统计、推送、客服 SDK 收集超范围数据。",
+      "nontechnical_check": "查看 SDK 文档和隐私清单，确认默认采集项。",
+      "ask_dev_or_ai": "SDK 默认采集了哪些信息？能否关闭？是否写入隐私政策？",
+      "best_practice": "关闭非必要采集，隐私政策披露，按需初始化 SDK。",
+      "red_flags": [
+        "SDK 自动采集设备和位置",
+        "隐私政策没写 SDK",
+        "无法关闭非必要采集"
+      ],
+      "tags": [
+        "sdk",
+        "privacy",
+        "third-party"
+      ]
+    },
+    {
+      "id": "supply-005",
+      "category_id": "supply",
+      "priority": "P2",
+      "severity": "low",
+      "title": "供应商合同缺少安全条款",
+      "risk": "第三方出事后责任不清，数据处理和通知义务缺失。",
+      "nontechnical_check": "检查合同是否写数据保护、保密、事故通知、删除和审计要求。",
+      "ask_dev_or_ai": "第三方处理用户数据是否有合同约束？出事多久通知？",
+      "best_practice": "数据处理协议、保密条款、事故通知期限、删除和审计要求。",
+      "red_flags": [
+        "第三方口头接入无合同",
+        "无事故通知条款",
+        "供应商可转包数据处理"
+      ],
+      "tags": [
+        "vendor",
+        "contract",
+        "privacy"
+      ]
+    },
+    {
+      "id": "uxsec-001",
+      "category_id": "uxsec",
+      "priority": "P0",
+      "severity": "high",
+      "title": "用户看不懂收费规则",
+      "risk": "扣费纠纷、投诉、平台处罚和用户信任崩塌。",
+      "nontechnical_check": "从购买页到支付页看价格、周期、自动续费、退款规则是否清楚。",
+      "ask_dev_or_ai": "自动续费、试用、退款、取消方式是否明确展示？",
+      "best_practice": "付款前明确金额、周期、权益、取消方式和退款规则。",
+      "red_flags": [
+        "支付前看不到续费周期",
+        "退款规则隐藏",
+        "按钮文案诱导付费"
+      ],
+      "tags": [
+        "billing",
+        "ux",
+        "trust"
+      ]
+    },
+    {
+      "id": "uxsec-002",
+      "category_id": "uxsec",
+      "priority": "P1",
+      "severity": "medium",
+      "title": "删除或注销不可逆但提示不清",
+      "risk": "用户误操作造成纠纷或数据损失。",
+      "nontechnical_check": "尝试删除内容、注销账号、清空数据，观察提示是否说明后果。",
+      "ask_dev_or_ai": "不可逆操作是否明确告知后果？是否有冷静期或恢复窗口？",
+      "best_practice": "清晰确认、冷静期、可恢复窗口，高风险操作二次确认。",
+      "red_flags": [
+        "一键永久删除",
+        "注销不说明后果",
+        "删除后无法申诉"
+      ],
+      "tags": [
+        "destructive-action",
+        "ux",
+        "recovery"
+      ]
+    },
+    {
+      "id": "uxsec-003",
+      "category_id": "uxsec",
+      "priority": "P1",
+      "severity": "medium",
+      "title": "安全提示过度打扰",
+      "risk": "用户绕过安全设置、忽视提示或放弃使用。",
+      "nontechnical_check": "体验注册、登录、支付、授权是否频繁弹窗，是否影响核心流程。",
+      "ask_dev_or_ai": "哪些提示必须？能否按风险触发而不是每次打扰？",
+      "best_practice": "高风险强提醒，低风险轻提示，提示文案具体可执行。",
+      "red_flags": [
+        "每一步都弹安全提示",
+        "提示含糊只会吓人",
+        "用户无法完成正常流程"
+      ],
+      "tags": [
+        "ux",
+        "warning",
+        "risk-based"
+      ]
+    },
+    {
+      "id": "uxsec-004",
+      "category_id": "uxsec",
+      "priority": "P2",
+      "severity": "low",
+      "title": "错误提示诱导泄露信息",
+      "risk": "提示“手机号不存在”等帮助攻击者枚举用户。",
+      "nontechnical_check": "输入不存在手机号和错误密码，看提示是否明显不同。",
+      "ask_dev_or_ai": "登录、注册、找回密码提示是否会暴露账号存在？",
+      "best_practice": "统一提示，如“账号或密码错误”“如账号存在将发送通知”。",
+      "red_flags": [
+        "直接提示手机号已注册/不存在",
+        "找回密码暴露账号状态",
+        "错误提示给出过多内部信息"
+      ],
+      "tags": [
+        "account-enumeration",
+        "ux",
+        "error-message"
+      ]
+    },
+    {
+      "id": "uxsec-005",
+      "category_id": "uxsec",
+      "priority": "P2",
+      "severity": "low",
+      "title": "无用户安全教育入口",
+      "risk": "用户被骗、误点钓鱼链接或相信假客服后怪平台。",
+      "nontechnical_check": "是否有官方客服、防诈骗、付款提醒、验证码提醒、外链风险提示。",
+      "ask_dev_or_ai": "平台如何告诉用户官方联系方式、付款方式和不会索要验证码？",
+      "best_practice": "关键场景提示官方渠道、防冒充提醒、外链风险提示和客服 SOP。",
+      "red_flags": [
+        "客服会索要验证码",
+        "无官方渠道说明",
+        "外链和二维码无风险提示"
+      ],
+      "tags": [
+        "trust",
+        "anti-fraud",
+        "support"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "name": "OWASP ASVS",
+      "url": "https://owasp.org/www-project-application-security-verification-standard/",
+      "note": "Web 应用安全验证控制基线。"
+    },
+    {
+      "name": "OWASP Web Security Testing Guide",
+      "url": "https://owasp.org/www-project-web-security-testing-guide/",
+      "note": "Web 应用安全测试方法基线。"
+    },
+    {
+      "name": "OWASP Top 10 2021",
+      "url": "https://owasp.org/Top10/2021/",
+      "note": "Web 应用高风险类别。"
+    },
+    {
+      "name": "OWASP API Security Top 10 2023",
+      "url": "https://owasp.org/API-Security/editions/2023/en/0x00-header/",
+      "note": "API 授权、认证、资源消耗和业务滥用风险。"
+    },
+    {
+      "name": "OWASP File Upload Cheat Sheet",
+      "url": "https://cheatsheetseries.owasp.org/cheatsheets/File_Upload_Cheat_Sheet.html",
+      "note": "文件上传限制、隔离、扫描和存储建议。"
+    },
+    {
+      "name": "OWASP LLM Top 10",
+      "url": "https://owasp.org/www-project-top-10-for-large-language-model-applications/",
+      "note": "大模型应用提示词、输出、插件、敏感信息和成本风险。"
+    },
+    {
+      "name": "NIST SP 800-63B",
+      "url": "https://pages.nist.gov/800-63-4/sp800-63b.html",
+      "note": "数字身份、验证码和认证限速建议。"
+    },
+    {
+      "name": "CISA Secure by Design",
+      "url": "https://www.cisa.gov/securebydesign",
+      "note": "默认安全、MFA、日志等产品安全原则。"
+    },
+    {
+      "name": "中国个人信息保护法",
+      "url": "https://en.spp.gov.cn/2021-12/29/c_948419.htm",
+      "note": "个人信息处理透明、必要性和安全责任。"
+    },
+    {
+      "name": "网络信息内容生态治理规定",
+      "url": "https://appinchina.co/government-documents/provisions-on-the-ecological-governance-of-network-information-contents/",
+      "note": "UGC 平台账号、发布、评论、巡查和应急处置机制。"
+    }
+  ]
+}
